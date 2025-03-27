@@ -1,4 +1,4 @@
-django
-Pillow
-pandas
-matplotlib
+openai
+python-dotenv
+numpy
+requests
