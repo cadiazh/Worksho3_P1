@@ -2,30 +2,33 @@
 
 {% block content %}
 <div class="container mt-4">
-  <h1 class="mb-4">Recomendador de películas</h1>
+    <h1>🔎 Sistema de Recomendación</h1>
 
-  <!-- Formulario de búsqueda -->
-  <form method="POST" class="mb-4">
-    {% csrf_token %}
-    <div class="input-group">
-      <input type="text" name="query" class="form-control" placeholder="Escribe una película o descripción..." required>
-      <button class="btn btn-primary" type="submit">Recomendar</button>
-    </div>
-  </form>
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="prompt" class="form-label">Describe lo que te gustaría ver:</label>
+            <textarea name="prompt" class="form-control" rows="4" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Buscar película</button>
+    </form>
 
-  <!-- Resultados de recomendación -->
-  {% if recommendations %}
-    <h4>Resultados:</h4>
-    <ul class="list-group mt-3">
-      {% for movie in recommendations %}
-        <li class="list-group-item">
-          <h5>{{ movie.title }}</h5>
-          <p>{{ movie.description }}</p>
-        </li>
-      {% endfor %}
-    </ul>
-  {% elif query %}
-    <div class="alert alert-warning">No se encontraron recomendaciones para "{{ query }}"</div>
-  {% endif %}
+    {% if movie %}
+        <div class="card mt-4" style="width: 100%;">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <img src="{{ movie.image.url }}" class="img-fluid rounded-start" alt="Imagen de la película">
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ movie.title }}</h5>
+                        <p class="card-text">{{ movie.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% elif prompt %}
+        <div class="alert alert-warning mt-4">No se encontraron resultados para tu búsqueda.</div>
+    {% endif %}
 </div>
 {% endblock %}
