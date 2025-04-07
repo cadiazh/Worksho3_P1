@@ -7,6 +7,13 @@ import matplotlib.pyplot as plt
 import matplotlib
 import io
 import urllib, base64
+import numpy as np
+import os
+from dotenv import load_dotenv
+from openai import OpenAI
+
+load_dotenv('openAI.env')
+client = OpenAI(api_key=os.getenv("openai_apikey"))
 
 def home(request):
     #return HttpResponse('<h1>Welcome to Home Page</h1>')
@@ -123,3 +130,35 @@ def generate_bar_chart(data, xlabel, ylabel):
     buffer.close()
     graphic = base64.b64encode(image_png).decode('utf-8')
     return graphic
+def cosine_similarity(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+def recommend_movie(request):
+    movie = None
+
+    if request.method == "POST":
+        prompt = request.POST.get("prompt")
+
+        if prompt:
+            # 1. Generar el embedding del prompt
+            response = client.embeddings.create(
+                input=[prompt],
+                model="text-embedding-3-small"
+            )
+            prompt_embedding = np.array(response.data[0].embedding, dtype=np.float32)
+
+            # 2. Buscar película más similar
+            best_similarity = -1
+            best_movie = None
+
+            for m in Movie.objects.all():
+                if m.emb:  # asegurarse que tenga embedding
+                    movie_embedding = np.frombuffer(m.emb, dtype=np.float32)
+                    similarity = cosine_similarity(prompt_embedding, movie_embedding)
+
+                    if similarity > best_similarity:
+                        best_similarity = similarity
+                        best_movie = m
+
+            movie = best_movie
+
+    return render(request, 'recommend.html', {'movie': movie})

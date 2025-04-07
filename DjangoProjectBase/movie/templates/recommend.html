@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1 class="mb-4">Recomendador de películas</h1>
+
+  <!-- Formulario de búsqueda -->
+  <form method="POST" class="mb-4">
+    {% csrf_token %}
+    <div class="input-group">
+      <input type="text" name="query" class="form-control" placeholder="Escribe una película o descripción..." required>
+      <button class="btn btn-primary" type="submit">Recomendar</button>
+    </div>
+  </form>
+
+  <!-- Resultados de recomendación -->
+  {% if recommendations %}
+    <h4>Resultados:</h4>
+    <ul class="list-group mt-3">
+      {% for movie in recommendations %}
+        <li class="list-group-item">
+          <h5>{{ movie.title }}</h5>
+          <p>{{ movie.description }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  {% elif query %}
+    <div class="alert alert-warning">No se encontraron recomendaciones para "{{ query }}"</div>
+  {% endif %}
+</div>
+{% endblock %}
