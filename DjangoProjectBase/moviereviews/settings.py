@@ -133,3 +133,5 @@ STATICFILES_DIRS = [
  os.path.join(BASE_DIR, "static"),
  'moviereviews/static/',
 ]
+
+ALLOWED_HOSTS = ['3.94.86.241']
